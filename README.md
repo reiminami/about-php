@@ -1,9 +1,10 @@
-# about-php
+# About PHP
 
 *PHP8.4
 
 ## 目次
 
+1. [命名規則](#命名規則)
 1. [Hello World](#hello-world)
 1. [変数と定数](#変数と定数)
 1. [データ型](#データ型)
@@ -11,197 +12,231 @@
 1. [ループ](#ループ)
 1. [配列](#配列)
 1. [列挙型](#列挙型)
-1. [ユーザー定義関数](#ユーザー定義関数)
-1. [クラスとオブジェクト](#クラスとオブジェクト)
-1. [プロパティフック](#プロパティフック)
-1. [クラスのオートロード](#クラスのオートロード)
-1. [クラスの継承](#クラスの継承)
-1. [インターフェース](#インターフェース)
-1. [トレイト](#トレイト)
-1. [名前空間](#名前空間)
+1. [関数](#関数)
+1. [クラス](#クラス)
+1. [継承](#継承)
+1. [標準関数](#標準関数)
+1. [キャスト](#キャスト)
 1. [例外](#例外)
+1. [名前空間](#名前空間)
+1. [ファイル読み込み](#ファイル読み込み)
+1. [クラスのオートロード](#クラスのオートロード)
 1. [フォーム](#フォーム)
-1. [関数・メソッド](#関数メソッド)
-1. [mysqli](#mysqli)
-1. [mysqliクラス](#mysqliクラス)
+1. [mysqli (基本)](#mysqli-基本)
+1. [mysqli (応用)](#mysqli-応用)
+1. [PDO](#pdo)
+
+## 命名規則
+
+```php
+// 変数
+$my_name = 'John';  // 第1候補
+$myName = 'John';   // 第2候補
+
+// 定数
+const MY_CONST = 3.14;
+
+// 関数
+function myFunction() {
+    echo 'Hello';
+}
+
+// クラス
+class MyClass {
+    // メソッド
+    private function myMethod() {}
+}
+
+// ファイル名
+// MyClass.php
+```
+
+[⬆︎目次へ戻る](#目次)
 
 ## Hello World
 
-- 出力
+**最低限のコード**
 
 ```php
 <?php
-echo 'Hello, World!';
+echo 'Hello, World!' . PHP_EOL;
 ?>
 ```
 
-- コメント
+**実行**
 
-```php
-// Comment
-
-/*
-Comment
-*/
+```sh
+php sample.php
 ```
 
 [⬆︎目次へ戻る](#目次)
 
 ## 変数と定数
 
-- 変数
+**変数**
 
 ```php
 $name = 'John';
-echo "Hello, $name";    // Hello, John
-echo 'Hello, ' . $name; // Hello, John
+echo $name . PHP_EOL;
 ```
 
-- 定数
+**定数**
 
 ```php
-define("TAX", 1.1);
-const PI = 3.14;
+define("PI", 3.14);
+const PI2 = 3.14;
+echo PI . PHP_EOL;
+echo PI2 . PHP_EOL;
+```
+
+**テンプレートリテラル**
+
+```php
+$name = 'John';
+echo "Hello, {$name}!" . PHP_EOL;
+```
+
+**null合体演算子**
+
+```php
+$username = $_GET['username'] ?? 'GUEST';
+echo $username . PHP_EOL;
 ```
 
 [⬆︎目次へ戻る](#目次)
 
 ## データ型
 
-- 型一覧
-    - null
-    - bool
-    - int
-    - float
-    - string
-    - array
-    - object
-    - enum
+**型一覧**
 
-<br>
+- null
+- bool
+- int
+- float
+- string
+- array
+- object
+- callable
+- iterable
+- mixed
+- never
+- void
 
-- 引数の型宣言
+**Union型**
 
 ```php
-function sum(int $a, int $b) {
-	return $a + $b;
+function output(int|string $x): void {
+    echo $x . PHP_EOL;
+}
+output(100);
+output("hundred");
+```
+
+**Nullable型**
+
+```php
+function find(): ?User {
+    return null;
 }
 ```
 
-- 戻り値の型宣言
-```php
-function hello(): string {
-	return "Hello";
-}
-```
-
-- 強い型付け設定
+**強い型付け設定**
 
 ```php
-declare(strict_types=1);
-
-function plusOne(int $a): int {
-	return $a + 1;
-}
-
-echo plusOne(2) . PHP_EOL;
-echo plusOne(true) . PHP_EOL;	// エラーになる
+declare(strict_types=1);    // ファイルの先頭に書くこと
 ```
 
 [⬆︎目次へ戻る](#目次)
 
 ## 条件分岐
 
-- if文
+**if**
 
 ```php
-if ($num === 0) {
-    echo "A";
-} elseif ($num > 0) {
-    echo "B";
+if ($score === 0) {
+    echo 'A';
+} elseif ($score === 1) {
+    echo 'B';
 } else {
-    echo "C";
+    echo 'C';
 }
 ```
 
-- switch文
+**switch**
 
 ```php
 switch ($score) {
+    case 0:
+        echo 'A';
+        break;
     case 1:
-    case 2:
-        echo "A";
-        break;
-    case 3:
-        echo "B";
-        break;
-    case 4:
-    case 5:
-        echo "C";
+        echo 'B';
         break;
     default:
-        echo "Z";
+        echo 'C';
         break;
 }
 ```
 
-- match文
+**match**
 
 ```php
 $msg = match($score) {
-    1, 2    => "A",
-    3       => "B",
-    4, 5    => "C",
-    default => "Z",
+    0       => 'A',
+    1       => 'B',
+    2, 3    => 'C',
+    default => 'Z',
 };
 ```
 
-- 三項演算子
+**三項演算子**
 
 ```php
 $isGood = true;
-echo $isGood ? "Good" : "Bad";
+echo $isGood ? 'Good' : 'Bad';
 ```
 
 [⬆︎目次へ戻る](#目次)
 
 ## ループ
 
-- for
+**for**
 
 ```php
 for ($i=0; $i<3; $i++) {
-    echo $i;
+    echo $i . PHP_EOL;
 }
 ```
 
-- while
+**while**
 
 ```php
+$i = 0;
 while ($i < 3) {
-    echo $i++;
+    echo $i++ . PHP_EOL;
 }
 ```
 
-- do-while
+**do-while**
 
 ```php
+$i = 0;
 do {
-    echo $i++;
+    echo $i++ . PHP_EOL;
 } while ($i < 3);
 ```
 
-- foreach
+**foreach**
 
 ```php
-$nums = [0, 1, 2];
-foreach($nums as $num) {
+$nums = [10, 20, 30];
+foreach ($nums as $num) {
     echo $num . PHP_EOL;
 }
 
 $arr = ['one' => 1, 'two' => 2, 'three' => 3];
 foreach ($arr as $key => $value) {
-	echo "$key $value" . PHP_EOL;
+    echo "{$key} {$value}" . PHP_EOL;
 }
 ```
 
@@ -209,791 +244,984 @@ foreach ($arr as $key => $value) {
 
 ## 配列
 
-- 配列宣言
+**初期化・アクセス**
 
 ```php
-$nums = array('one' => 1, 'two' => 2);  // 基本
-$nums = ['one' => 1, 'two' => 2];       // 短縮
-$nums = ['one', 'two'];                 // キー省略
+// 基本 (配列)
+$nums1 = [10, 20, 30];
+
+// 基本 (連想配列)
+$nums2 = array('one' => 1, 'two' => 2);
+
+// 短縮
+$nums3 = ['one' => 1, 'two' => 2];
+
+// アクセス
+echo $nums1[0];
 ```
 
-- 要素の追加
+**要素追加**
 
 ```php
 $nums = [10, 20];
+
 $nums[] = 30;
 $nums[3] = 40;
-$nums['x'] = 50;
+$nums['four'] = 50;
 ```
 
-- 要素の削除
+**要素削除**
 
 ```php
-unset($arr[0]);
-unset($arr['x']);
-unset($arr);
+unset($nums['four']);
+unset($nums[3]);
 ```
 
-- 要素の分解
+**要素分解**
 
 ```php
-$arr = [10, 20, 30];
-[$a, $b, $c] = $arr;    // a:10, b:20, c:30
-[$d,   , $f] = $arr;    // d:10,       f:30
-[$a, $b] = [$b, $a];    // a:20, b:10
+$nums = [10, 20, 30];
+[$a, $b, $c] = $nums;   // a:10, b:20, c:30
+[$d,   , $f] = $nums;   // d:10,       f:30
 ```
 
 [⬆︎目次へ戻る](#目次)
 
 ## 列挙型
 
-- 列挙型
+**enum**
 
 ```php
-enum Suit {
-    case Hearts;
-    case Diamonds;
-    case Clubs;
-    case Spades;
-}
+enum Direction {
+    case Top;
+    case Bottom;
+    case Left;
+    case Right;
+};
 
-echo Suit::Clubs->name; // Clubs
+echo Direction::Bottom->name;   // Bottom
 ```
 
-- 値依存の列挙型
+**値依存enum**
 
 ```php
-enum Gender: string {
-    case Male = '男';
-    case Female = '女';
-}
+enum Direction: int {
+    case Top = 0;
+    case Bottom = 1;
+    case Left = 2;
+    case Right = 3;
+};
 
-echo Gender::Male->name . PHP_EOL;  // Male
-echo Gender::Male->value . PHP_EOL; // 男
+echo Direction::Bottom->name;   // Bottom
+echo Direction::Bottom->value;  // 1
 ```
 
 [⬆︎目次へ戻る](#目次)
 
-## ユーザー定義関数
+## 関数
 
-- ユーザー定義関数
+**定義・使用**
 
 ```php
-function sum($a, $b) {
+function sum(int $a, int $b): int {
     return $a + $b;
 }
 
-echo sum(10, 20) . PHP_EOL; // 30
+echo sum(10, 20);
 ```
 
-> 「関数」は`sum()`、「メソッド」は`$obj->sum()`みたいな感じ。
-
-- **リファレンス渡し**: 関数にそのまま配列等を渡す
+**リファレンス渡し**
 
 ```php
-function withYear(&$title, $year) {
-    $title .= " ({$year})";
+function swap(int &$a, int &$b): void {
+    [$a, $b] = [$b, $a];
 }
 
-$title = 'Final Fantasy VII';
-withYear($title, 1997);
-echo $title . PHP_EOL;  // Final Fantasy VII (1997)
+$a = 10;
+$b = 20;
+
+echo $a . ' ' . $b . PHP_EOL;   // 10 20
+swap($a, $b);
+echo $a . ' ' . $b . PHP_EOL;   // 20 10
 ```
 
-- **無名関数 (クロージャ)**: 関数名を指定せずに関数を作る
+**無名関数/クロージャ** - 関数名を指定せずに関数を作る
 
 ```php
-$mr = function($name) {
+$mister = function($name) {
     return "Mr. {$name}";
 };
+
 $name = 'John';
-echo $mr($name);    // Mr. John
+echo $mister($name);    // Mr. John
 ```
 
-- **アロー関数**: 無名関数を簡潔に書いた版
+**アロー関数** - 無名関数を簡潔に書く
 
 ```php
-$mr = fn($name) => "Mr. {$name}";
+$mister = fn($name) => "Mr. {$name}";
+
+$name = 'John';
+echo $mister($name);
 ```
 
 [⬆︎目次へ戻る](#目次)
 
-## クラスとオブジェクト
+## クラス
 
-- 基本的なクラス
+**定義**
 
 ```php
 class Person {
-	public string $name = 'UNKNOWN';
-	public function displayName() {
-		echo $this->name;
-	}
+    public string $name = '???';
+    public function displayName(): void {
+        echo $this->name;
+    }
 }
 ```
 
-- インスタンス生成
+**インスタンス生成**
 
 ```php
-$p = new Person();
-$p->name = 'John';
-$p->displayName();
+$person = new Person();
+$person->name = 'John';
+$person->displayName();
 ```
 
-- オブジェクトの代入
-
-```php
-$p2 =& $p;
-$p2->displayName();	// John
-$p->name = 'Paul';
-$p2->displayName();	// Paul
-```
-
-- コンストラクタ
+**コンストラクタ**
 
 ```php
 class Rectangle {
-    public int $height;
     public int $width;
-    public function area() {
-        return $this->height * $this->width;
+    public int $height;
+    public function area(): int {
+        return $this->width * $this->height;
     }
-    public function __construct($h, $w) {
+    public function __construct(int $w, int $h) {
+        $this->width = $w;
         $this->height = $h;
-        $this->width  = $w;
     }
 }
 
-$r = new Rectangle(10, 20);
-echo $r->area();    // 200
+$rect = new Rectangle(10, 20);
+echo $rect->area();
 ```
 
-- **finalキーワード**: 子クラスから上書き不能にする。
+**finalキーワード** - 子クラスから上書き不可にする
 
 ```php
-final class TestCharacter {
-    final public const MAX_HP = 9999;
-    final public function testCall() {
-        echo "Hello" . PHP_EOL;
+final class Goblin {}
+```
+
+**プロパティフック** - getter, setter
+
+```php
+class Person {
+    private string $_name;
+
+    public string $name {
+        set {
+            $this->_name = $value;
+        }
+        get {
+            $this->_name;
+        }
     }
 }
 ```
 
-## プロパティフック
-
-- アクセス権
-    - `public`: どこからでもアクセス可能
-    - `protected`: そのクラス自身、継承クラス、親クラスからアクセス可能
-    - `private`: そのクラス自身のみからアクセス可能
-
-<br>
-
-- プロパティにsetter/getterを直接記述できる。
+**アロー構文** - 簡略化したgetter, setter
 
 ```php
-class Character {
-	public string $name {
-		set {
-            $this->name = $value;
-		}
-		get {
-			return "My name is {$this->name}";
-		}
-	}
+class Person {
+    private string $_name;
+
+    public string $name {
+        set => $this->_name = $value;
+        get => $this->_name;
+    }
 }
 ```
 
-- アロー構文で簡略化可能。
+**staticメンバ**
 
 ```php
-class Character {
-	public string $name {
-		set => $this->name = $value;
-		get => "My name is {$this->name}";
-	}
+class Timer {
+    public static int $cnt = 0;
+
+    public static function plus(): void {
+        self::$cnt++;
+    }
+}
+
+$t = new Timer();
+echo $t::$cnt . PHP_EOL;    // 0
+$t->plus();
+echo $t::$cnt . PHP_EOL;    // 1
+```
+
+**コンストラクタのプロモーション**
+
+```php
+class Person {
+    public function __construct(
+        public string $name,
+        public int $age,
+    ) {}
 }
 ```
 
-- **仮想プロパティ**: 値を保持しないプロパティ
+**仮想プロパティ**
 
 ```php
 class Rectangle {
-	public int $area {
-		get => $this->h * $this->w;
-	}
-	public function __construct(public int $h, public int $w) {}
-}
-
-$r = new Rectangle(2, 4);
-echo $r->area;
-```
-
-[⬆︎目次へ戻る](#目次)
-
-## クラスのオートロード
-
-**クラスのオートローディング**: クラス定義毎にファイルを用意して各スクリプトの先頭で読み込むのは面倒。以下のコードで任意の数のオートローダを読み込み、クラス等を自動的に読み込むことが可能。
-
-- クラス`TestClass` を`TestClass.php` からロードする
-
-```php
-spl_autoload_register(function ($class_name) {
-	include $class_name . '.php';
-});
-
-$obj = new TestClass();
-echo $obj->id;
-```
-
-- クラスのオートローディング
-
-```php
-spl_autoload_register(function ($class_name) {
-    $filename = __DIR__ . '/models/' . $class_name . '.php';
-    if (is_file($filename)) {
-        require_once $filename;
+    public int $area {
+        get => $this->w * $this->h;
     }
-});
+    public function __construct(public int $w, public int $h) {}
+}
+```
+
+**読み込み専用**
+
+```php
+readonly class User {
+    public readonly int $id;
+}
 ```
 
 [⬆︎目次へ戻る](#目次)
 
-## クラスの継承
+## 継承
 
-- 継承
+**継承**
 
 ```php
 class Square extends Rectangle {
-    public function __construct($side) {
+    public function __construct(int $side) {
         parent::__construct($side, $side);
     }
 }
-
-$s = new Square(30);
-echo $s->area();    // 900
 ```
 
-- **抽象クラス**: 子クラスが実装すべきメソッド・プロパティを定義する
+**抽象クラス**
 
 ```php
-abstract class Shape {
+abstract class Animal {
     protected string $name;
-    public function __construct(string $name) {
-        $this->name = $name;
-    }
-    abstract public function area(): float;     // 子クラスで必ず実装する
-    public function describe() {
-        return "This is a {$this->name}";
+    abstract protected function cry(): void;  // 子クラスで必ず実装する
+    protected function toString(): void {
+        echo "Name: {$this->name}";
     }
 }
 
-class Rectangle extends Shape {
-    private $h;
-    private $w;
-    public function __construct($h, $w) {
-        parent::__construct("Rectangle");
-        $this->h = $h;
-        $this->w = $w;
-    }
-    public function area(): float {
-        return $this->h * $this->w;
+class Dog extends Animal {
+    #[Override]
+    protected function cry(): void {
+        echo "Woof";
     }
 }
-
-$r = new Rectangle(10, 20);
-echo $r->describe();
 ```
 
-[⬆︎目次へ戻る](#目次)
-
-## インターフェース
-
-- インターフェースを用意。
+**インターフェース**
 
 ```php
 interface Payable {
     public function pay(int $amount);
 }
-```
 
-- クラスにインターフェースを実装。
-
-```php
 class CreditCardPayment implements Payable {
+    #[Override]
     public function pay(int $amount) {
         echo "Paid {$amount} by credit card" . PHP_EOL;
     }
 }
 
 class CashPayment implements Payable {
+    #[Override]
     public function pay(int $amount) {
         echo "Paid {$amount} by cash" . PHP_EOL;
     }
 }
 ```
 
-- ルール不明でも受け取れる関数を作成。
+**インターフェースを使用した関数** - ルール不明でも受け取れる関数を作成可能
 
 ```php
 function checkout(Payable $payment) {
     $payment->pay(500);
 }
+
+checkout(new CreditCardPayment);
+checkout(new CashPayment);
 ```
 
-- 呼び出し
-
-```php
-checkout(new CreditCardPayment());
-checkout(new CashPayment());
-```
-
-[⬆︎目次へ戻る](#目次)
-
-## トレイト
-
-- クラスに追加できる共通機能（トレイト）を用意。
+**トレイト** - クラスに追加できる共通機能
 
 ```php
 trait Logger {
     public function log(string $msg) {
-        echo "[LOG] " . $msg . PHP_EOL;
+        echo "[LOG] {$msg}" . PHP_EOL;
     }
 }
-```
 
-- クラスでトレイトを使用。
-
-```php
-class UserService {
+class User {
     use Logger;
 
-    public function createUser() {
-        $this->log("User created");
+    public function create() {
+        $this->log("User created.");
     }
 }
-
-class OrderService {
-    use Logger;
-
-    public function createOrder() {
-        $this->log("Order created");
-    }
-}
-```
-
-- 呼び出し
-
-```php
-$user = new UserService();
-$user->createUser();
-
-$order = new OrderService();
-$order->createOrder();
 ```
 
 [⬆︎目次へ戻る](#目次)
 
-## 名前空間
+## 標準関数
 
-- **名前空間**: （要約）項目をカプセル化する仕組み。
+**数学**
 
 ```php
-namespace App\Models;
-
-class User {}
+$x = abs(-5);       // 絶対値
+$x = ceil(1.2);     // 切り上げ
+$x = floor(1.6);    // 切り下げ
+$x = round(1.5);    // 浮動小数点数を丸める
+$x = intdiv(11, 4); // 整数の除算
+$x = fmod(11, 4);   // 除算した際の剰余
+$x = max(4, 5);     // 最大値
+$x = min(6, 7);     // 最小値
 ```
 
-- **エイリアス/インポート**: 別の名前空間のものを使う。
+**文字列 (比較)** - すべての関数は、一致した場合0を返す
+
+> Nullバイト攻撃: 終端文字を含めることでチェックを潜り抜ける
+
+> バイナリセーフ: バイナリセーフでない関数を使用した場合はNullバイト攻撃に合う
 
 ```php
-use App\Models\User;
-use App\Models\User as U;
-use function App\Models\hello;
-use const App\Models\PI;
+$x = strcmp('A', 'A');              // バイナリセーフ
+$x = strcasecmp('A', 'a');          // バイナリセーフ・大文字小文字区別なし
+$x = strnatcmp('A', 'A');           // 自然順アルゴリズム
+$x = strnatcasecmp('A', 'a');       // 自然順アルゴリズム・大文字小文字区別なし
+$x = strncmp('A', 'A', 1);          // 文字列の長さ[2]までバイナリセーフ
+$x = strncasecmp('A', 'a', 1);      // 文字列の長さ[2]までバイナリセーフ・大文字小文字区別なし
+```
+
+**文字列 (分割)**
+
+```php
+$x = explode(',', 'ONE,TWO');       // 区切り文字[0]で文字列[1]を分割
+$x = str_split('ABCD', 2);          // 文字列[0]を文字数[1]ごとに分割
+$x = wordwrap('hi wor ld!!', 3);    // 文字列[0]を文字数[1]ごとに改行 (デフォルト: 75)
+```
+
+**文字列 (変換)**
+
+```php
+$x = str_replace('Z', 'C', 'ABZ');  // 文字列[2]の、文字[0]を文字[1]に置換
+$x = str_ireplace('z', 'C', 'ABZ'); // 文字列[2]の、文字[0]を文字[1]に置換 (大文字小文字区別なし)
+$x = lcfirst('Hello');              // 文字列[0]の先頭を小文字に変換
+$x = ucfirst('hello');              // 文字列[0]の先頭を大文字に変換
+$x = strtolower('Hello World');     // 文字列[0]を小文字に変換
+$x = strtoupper('Hello World');     // 文字列[0]を大文字に変換
+$x = ucwords('john smith');         // 文字列[0]の各単語を大文字に変換
+$x = strtr('12345', '12', '89');    // 文字列[0]の各文字[1]を各文字[2]に変換
+$x = trim(' hello ');               // 文字列[0]の前後のスペースを除去
+$x = ltrim(' hello ');              // 文字列[0]の先頭のスペースを除去
+$x = rtrim(' hello ');              // 文字列[0]の末尾のスペースを除去
+```
+
+**文字列 (探索)**
+
+```php
+$x = strpos('HELLO WORLD', 'O');    // 文字列[0]における文字列[1]の最初の出現位置
+$x = stripos('HELLO WORLD', 'o');   // 文字列[0]における文字列[1]の最初の出現位置 (大文字小文字区別なし)
+$x = strstr('HELLO WORLD', 'O');    // 文字列[0]の最初の文字列[1]の出現位置から末尾までの文字列
+$x = stristr('HELLO WORLD', 'o');   // 文字列[0]の最初の文字列[1]の出現位置から末尾までの文字列 (大文字小文字区別なし)
+$x = strrpos('HELLO WORLD', 'O');   // 文字列[0]における文字列[1]の最後の出現位置
+$x = strripos('HELLO WORLD', 'o');  // 文字列[0]における文字列[1]の最後の出現位置 (大文字小文字区別なし)
+$x = strrchr('HELLO WORLD', 'O');   // 文字列[0]の最後の文字列[1]の出現位置から末尾までの文字列
+$x = substr('HELLO WORLD', 2, 6);   // 文字列[0]のオフセット[1]から文字数[2]の文字列
+$x = str_contains('ABCDE', 'DE');   // 文字列[0]に文字列[1]が含まれるか？
+$x = str_starts_with('ABC', 'AB');  // 文字列[0]が文字列[1]で始まるか？
+$x = str_ends_with('ABC', 'BC');    // 文字列[0]が文字列[1]で終わるか？
+```
+
+**文字列 (HTML)**
+
+```php
+$x = htmlspecialchars('<p>ハロー</p>', ENT_QUOTES, 'UTF-8');            // エスケープ
+$x = htmlspecialchars_decode('&lt;p&gt;ハロー&lt;/p&gt;', ENT_QUOTES);  // デコード
+$x = strip_tags('Hello <?= "WORLD" ?>!');                              // HTMLタグ、PHPタグの除去
+```
+
+**文字列 (その他)**
+
+```php
+$x = strlen('ABCD');                // 文字列[0]の長さ (半角1バイト, 全角2バイト)
+$x = mb_strlen('あいうえお');        // 文字列[0]の長さ (半角1バイト, 全角1バイト)
+$x = strrev('ABCD');                // 文字列[0]の逆順にする
+$x = str_decrement('ABC');          // 文字列[0]をデクリメント
+$x = str_increment('ABC');          // 文字列[0]をインクリメント
+$x = str_pad('ABC', 10, '-');       // 文字列[0]を文字数[1]になるよう文字列[2]で埋める
+$x = similar_text('ABCC', 'ABZC');  // 文字列[0],[1]での同じ文字の数
+$x = str_repeat('AB', 4);           // 文字列[0]の計[1]回繰り返した文字列
+$x = str_shuffle('ABCD');           // 文字列[0]の各文字をシャッフル
+$x = str_word_count('hi my world'); // 文字列[0]の単語数
+$x = substr_count('ABCCE', 'C');    // 文字列[0]の文字列[1]の出現回数
+```
+
+**変数 (変換)**
+
+```php
+$x = boolval('1');          // boolとしての値を返す
+$x = floatval(32);          // floatとしての値を返す
+$x = intval('32');          // intとしての値を返す
+$x = strval('34');          // stringとしての値を返す
+```
+
+**変数 (確認)**
+
+```php
+$x = is_array(['ab']);      // 変数が配列か？
+$x = is_bool(true);         // 変数がboolか？
+$x = is_countable([4, 8]);  // 変数が数えられるか？
+$x = is_float(1.2);         // 変数がfloatか？
+$x = is_int(34);            // 変数がintか？
+$x = is_iterable([3, 6]);   // 変数がイテラブルか？
+$x = is_null(null);         // 変数がnullか？
+$x = is_numeric('456');     // 変数が数字または数値形式の文字列か？
+$x = is_object(new Error());// 変数がオブジェクトか？
+$x = is_scalar(123);        // 変数がスカラー型(int, float, string, bool)か？
+$x = is_string('ss');       // 変数が文字列か？
+$x = isset($x);             // 変数が宣言されており、nullではないか？
+$x = empty($y);             // 変数が空か？
+$x = gettype('sss');        // 変数の型
+```
+
+**配列 (基本)**
+
+```php
+$nums = [10, 20, 30, 40];
+$arr = array();
+$x = null;
+
+$arr = array_keys($nums);               // 配列[0]のキーを配列として返す
+$arr = array_values($nums);             // 配列[0]の値を配列として返す
+$x = array_key_first($nums);            // 配列[0]の最初のキー
+$x = array_key_last($nums);             // 配列[0]の最後のキー
+$x = array_key_exists(2, $nums);        // 配列[1]にキー[0]が存在するか？
+$x = array_is_list($nums);              // 配列[0]がリストか？
+$x = implode('-', $nums);               // 連結
+```
+
+**配列 (追加・削除)**
+
+```php
+$x = array_pop($nums);                  // 配列[0]の末尾から要素を取り除く
+array_push($nums, 40);                  // 配列[0]の末尾に要素[1]を追加
+$x = array_shift($nums);                // 配列[0]の先頭から要素を取り除く
+array_unshift($nums, 10);               // 配列[0]の先頭に要素[1]を追加
+$arr = array_merge($nums, [50, 60]);    // 複数の配列[0~]を結合
+array_splice($nums, 4);                 // 配列[0]をオフセット[1]以降の要素を削除
+array_splice($nums, 4, 2);              // 配列[0]の位置[1]から[2]個の要素を削除
+```
+
+**配列 (検索)**
+
+```php
+$x = array_search(30, $nums);                       // 配列[1]における最初の値[0]の出現位置
+$x = array_find($nums, fn($v) => $v > 10);          // 配列[0]でCallback[1]を満たす最初の要素の値
+$x = array_find_key($nums, fn($v) => $v > 10);      // 配列[0]でCallback[1]を満たす最初の要素のキー
+$x = in_array(30, $nums);                           // 配列[1]に値[0]が存在するか？
+$x = array_all($nums, fn($v) => $v > 5);            // 配列[0]でCallback[1]を全て満たすか？
+$x = array_any($nums, fn($v) => $v > 20);           // 配列[0]でCallback[1]のいずれかを満たすか？
+```
+
+**配列 (フィルタリング)**
+
+```php
+$arr = array_filter($nums, fn($v) => $v > 10);      // 配列[0]をCallback[1]でフィルタリング
+$arr = array_unique([5, 5, 10, 15]);                // 配列[0]から重複した値を削除
+$arr = array_column([['id'=>1],['id'=>2]], 'id');   // 連想配列[0]からキー[1]を指定したカラムの値
+```
+**配列 (編集)**
+
+```php
+$arr = array_replace($nums, [11, 22]);              // 配列[0]の先頭から順に配列[1]の値に置換
+$arr = array_change_key_case(['ID'=>0]);            // 配列[0]のキーを小文字化
+$arr = array_change_key_case(['id'=>0], CASE_UPPER);// 配列[0]のキーを大文字化
+$arr = array_flip($nums);                           // 配列[0]のキーと値を反転
+```
+
+**配列 (変換)**
+
+```php
+$arr = array_slice($nums, 1);                       // 配列[0]をオフセット[1]からに変換した配列を返す
+$arr = array_chunk($nums, 2);                       // 配列[0]を要素数[1]で分割した配列を返す
+$arr = array_reverse($nums);                        // 配列[0]を逆順にした配列を返す
+$arr = array_pad($nums, 6, 99);                     // 配列[0]を長さ[1]として、値[2]で埋める
+$arr = array_fill(0, 3, $nums);                     // 配列[2]に開始インデックス[0]を指定し[1]個の配列を返す
+$arr = array_fill_keys($nums, [1]);                 // 配列[0]をキーにして値[1]を設定した配列を返す
+$arr = array_combine($nums, [1,2,3,4]);             // 配列[0]をキーにして、配列[1]をとした配列を返す
+$arr = array_map(fn($item) => $item + 1, $nums);    // 配列[1]にCallback[0]を適用
+```
+
+**配列 (計算)**
+
+```php
+$x = count($nums);                  // 配列[0]の要素数
+$x = array_sum($nums);              // 配列[0]の値の合計
+$x = array_product($nums);          // 配列[0]の値の積
+$x = array_count_values($nums);     // 配列[0]の異なる値の出現数
+```
+
+**配列 (ポインタ)**
+
+```php
+$x = key($nums);                // 配列[0]のキーを取り出す
+$x = current($nums);            // 配列[0]の内部ポインタが指す要素
+$x = next($nums);               // 配列[0]の内部ポインタを進める
+$x = prev($nums);               // 配列[0]の内部ポインタを戻す
+reset($nums);                   // 配列[0]の内部ポインタを先頭要素にセット
+end($nums);                     // 配列[0]の内部ポインタを末尾要素にセット
+```
+
+**配列 (ソート)**
+
+```php
+ksort($nums);                   // キーの昇順
+krsort($nums);                  // キーの降順
+asort($nums);                   // 昇順・連想キーと要素の関係維持
+arsort($nums);                  // 降順・連想キーと要素の関係維持
+sort($nums);                    // 値の昇順
+rsort($nums);                   // 値の降順
+natsort($nums);                 // 昇順・自然順アルゴリズム
+natcasesort($nums);             // 昇順・自然順アルゴリズム (大文字小文字区別なし)
+array_multisort($nums);         // 複数または多次元の配列をソート
+```
+
+[⬆︎目次へ戻る](#目次)
+
+## キャスト
+
+**型キャスト**
+
+```php
+$s = '1234';
+$i = intval($s);    // 遅め
+$x = (int)$s;       // intvalより速い
+
+echo gettype($i) . PHP_EOL;
+echo gettype($x) . PHP_EOL;
 ```
 
 [⬆︎目次へ戻る](#目次)
 
 ## 例外
 
+**捕捉**
+
 ```php
-function throwError() {
-	throw new Exception('ERROR!');
+try {
+    $x = 2 / 0;
+} catch (DivisionByZeroError $e) {
+    echo $e->getMessage() . PHP_EOL;
+} catch (Exception $e) {
+    echo $e->getMessage() . PHP_EOL;
+} finally {
+    echo 'End' . PHP_EOL;
+}
+```
+
+**スロー**
+
+```php
+throw new Exception('Error!!!');
+```
+
+[⬆︎目次へ戻る](#目次)
+
+## 名前空間
+
+**名前空間** - (要約)項目をカプセル化する
+
+```php
+namespace App\Models;
+
+class User {
+    // ...
 }
 
-try {
-	throwError();
-} catch (DateException | RangeException $e) {
-	echo $e->getMessage();
-} catch (Exception $e) {
-	echo $e->getMessage() . PHP_EOL;
-} finally {
-	echo "End." . PHP_EOL;
+const PI = 3.14;
+
+function sum(int $a, int $b): int {
+    return $a + $b;
 }
+```
+
+**エイリアス/インポート** - 別の名前空間のものを使う
+
+```php
+use App\Models\User;
+use App\Models\User as U;
+use const App\Models\PI;
+use const App\Models\PI as PI2;
+use function App\Models\sum;
+use function App\Models\sum as s;
+```
+
+[⬆︎目次へ戻る](#目次)
+
+## ファイル読み込み
+
+```php
+require 'Test.php';
+require_once 'Test.php';
+include 'Test.php';
+include_once 'Test.php';
+
+$t = new Test();
+```
+
+[⬆︎目次へ戻る](#目次)
+
+## クラスのオートロード
+
+**オートローディング** - クラス定義毎にスクリプトの先頭で読み込むのは面倒なため、
+下記コードで任意の数のオートローダを読み込み、クラスの自動読み込みを行う。
+
+```php
+// Test.php のTestクラスを読み込む
+spl_autoload_register(function ($class_name) {
+    include "{$class_name}.php";
+});
+
+$test = new Test();
+echo $test::ID;
 ```
 
 [⬆︎目次へ戻る](#目次)
 
 ## フォーム
 
-- [index.php](/form/index.php)
+**最低限のコード**
+
+- [index.php](/src/form/index.php)
+- [action.php](/src/form/action.php)
+
+**POSTとGET**
+
+- POST - データをHTTPボディに格納して送信する
+- GET - データをクエリストリング (URLの後ろ)に格納して送信する
+
+**スーパーグローバル**
 
 ```php
-<form action="action.php" method="post">
-    <label for="name">名前:</label>
-    <input type="text" name="name" id="name">
+// $GLOBALS - 使用可能な全ての変数への参照
+$GLOBALS['secred_id'] = 123;
+var_dump($secred_id ?? null);   // 123
 
-    <label for="age">年齢:</label>
-    <input type="number" name="age" id="age">
-
-    <button type="submit">送信</button>
-</form>
+// $_SERVER - サーバー情報及び実行時の環境情報
+var_dump($_SERVER['argc']);     // コマンドライン引数の数
+var_dump($_SERVER['argv']);     // コマンドライン引数の配列
 ```
-
-- [action.php](/form/action.php)
-
-```php
-名前: <?php echo htmlspecialchars($_POST['name']); ?>歳
-年齢: <?php echo $_POST['age']; ?>歳
-```
-
-- **POST**: データをHTTPボディに格納して送信
-- **GET**:  データをクエリストリング(URLの後ろ)に格納して送信
 
 [⬆︎目次へ戻る](#目次)
 
-## 関数・メソッド
+## mysqli (基本)
 
-[公式ドキュメント](https://www.php.net/manual/ja/funcref.php)
+*MAMPを使用してテスト
 
-*バイナリセーフ: バイナリセーフでない関数を使用した場合、Nullバイト攻撃に合う
-*Nullバイト攻撃: 終端文字を含めることでチェックを潜り抜けてしまうこと
-
-- Math
-
-    - abs - 絶対値
-    - ceil - 端数の切り上げ
-    - floor - 端数の切り捨て
-    - round - 浮動小数点数を丸める
-    - intdiv - 整数値の除算
-    - fmod - 除算した際の剰余
-    - max - 最大値
-    - min - 最小値
-
-- String
-
-    - <details><summary> 文字列比較 </summary>
-
-        - strcmp - 文字列比較 (バイナリセーフ)
-        - strcasecmp - 文字列比較 (バイナリセーフ / 大文字小文字区別なし)
-        - strnatcmp - 文字列比較 (自然順アルゴリズム)
-        - strnatcasecmp - 文字列比較 (自然順アルゴリズム / 大文字小文字区別なし)
-        - strncmp - 文字列比較 (n文字目までバイナリセーフ)
-        - strncasecmp - 文字列比較 (n文字目までバイナリセーフ / 大文字小文字区別なし)
-
-    - <details><summary> HTML </summary>
-
-        - htmlspecialchars - 特殊文字をHTMLエンティティに変換
-        - htmlspecialchars_decode - HTMLエンティティを特殊文字に変換
-        - strip_tags - 文字列からHTMLタグ、PHPタグを除去
-
-    - <details><summary> 文字列分割 </summary>
-
-        - explode - 文字列を指定文字列で分割
-        - str_split - 文字列を指定文字数ごとで分割
-        - wordwrap - 文字列を指定文字数ごとで分割 (文字数ごとに改行)
-        - parse_str - URLのクエリストリングを文字列配列としてパース
-
-    - <details><summary> 文字列置換 </summary>
-
-        - str_replace - 文字列を全て置換
-        - str_ireplace - 文字列を全て置換 (大文字小文字区別なし)
-        - substr_replace - インデックスと文字数を指定して文字列を置換
-        - ucfirst - 最初の文字を大文字に置換
-        - lcfirst - 最初の文字を小文字に置換
-        - strtolower - 文字列を大文字に置換
-        - strtoupper - 文字列を小文字に置換
-        - ucwords - 文字列の各単語の最初の文字を大文字に置換
-        - strtr - 文字の変換あるいは部分文字列の置換
-
-    - <details><summary> 文字列探索 </summary>
-
-        - strpos - 文字列から指定文字列の最初の位置を返す
-        - stripos - 文字列から指定文字列の最初の位置を返す (大文字小文字区別なし)
-        - strstr - 文字列から指定文字列の最初の位置を見つけ文字列を返す
-        - strchr - strstrと同じ
-        - strrpos - 文字列から部分文字列の最後の位置を返す
-        - strripos - 文字列から部分文字列の最後の位置を返す (大文字小文字区別なし)
-        - str_contains - 文字列に部分文字列が含まれるか
-        - str_starts_with - 文字列が部分文字列で始まるか
-        - str_ends_with - 文字列が部分文字列で終わるか
-        - substr - 文字列の一部分を返す
-        - strspn - 指定マスク内に含まれる文字からなる文字列の最初のセグメントの長さを返す
-        - strrchr - 文字列から指定文字列の最後の位置を見つけ文字列を返す
-
-    - <details><summary> 文字列除去 </summary>
-
-        - trim - 文字列の先頭及び末尾のホワイトスペースを除去
-        - ltrim - 先頭のみのtrim
-        - rtrim - 末尾のみのtrim
-
-    - <details><summary> その他 </summary>
-
-        - similar_text - ２つの文字列の類似性を計算
-        - str_decrement - 文字列のデクリメント
-        - str_increment - 文字列のインクリメント
-        - implode - 配列要素を文字列で連結
-        - str_pad - 文字列を固定長の文字列で埋める
-        - str_repeat - 文字列を指定回数分反復
-        - str_shuffle - 文字をシャッフル
-        - str_word_count - 文字列に使用されている単語の情報を配列で返す
-        - strlen - 文字列の長さ
-        - strrev - 文字列を逆順にする
-        - substr_count - 文字列の出現回数を数える
-
-- 配列
-
-    - <details><summary> 基本 </summary>
-
-        - array - 配列を生成する
-        - list - 複数の変数への代入を行う
-        - array_keys - 配列の全てのキーまたはその一部を返す
-        - array_values - 配列の全ての値を返す
-        - array_key_first - 配列の最初のキーを得る
-        - array_key_last - 配列の最後のキーを得る
-        - array_key_exists - 指定したキーまたは添字が配列にあるかどうか調べる
-        - key_exists - array_key_existsのエイリアス
-        - in_array - 配列に値があるか調べる
-        - array_is_list - 指定された配列がリストかどうか調べる
-        - compact - 変数名とその値から配列を作成する
-        - range - ある範囲の要素を含む配列を作成する
-
-    - <details><summary> 検索 </summary>
-
-        - array_search - 指定した値で配列を検索し、見つかった場合対応する最初のキーを返す
-        - array_find - コールバック関数を満たす最初の要素を返す
-        - array_find_key - コールバック関数を満たす最初の要素のキーを返す
-        - array_column - 入力配列から単一のカラムの値を返す
-        - array_unique - 配列から重複した値を削除する
-        - array_filter - 配列の要素をコールバック関数でフィルタリングする
-        - array_all - 配列の全ての要素がコールバック関数を満たすかどうか調べる
-        - array_any - 配列のいずれかの要素がコールバック関数を満たすかどうか調べる
-
-    - <details><summary> 編集 </summary>
-
-        - array_pop - 配列の末尾から要素を取り除く
-        - array_push - 配列の末尾に一つ以上の要素を追加する
-        - array_shift - 配列の先頭から要素を取り出す
-        - array_unshift - 配列の先頭に一つ以上の要素を追加する
-        - array_merge - 一つまたは複数の配列をマージする
-        - array_merge_recursive - 一つ以上の配列を再起的にマージする
-        - array_replace - 配列の要素を置換する
-        - array_replace_recursive - 配列の要素を再起的に置換する
-        - array_splice - 配列の一部を削除し、他の要素で置換する
-
-    - <details><summary> 変換 </summary>
-
-        - array_reverse - 要素を逆順にした配列を返す
-        - array_slice - 配列の一部を展開する
-        - array_chunk - 配列を分割する
-        - array_combine - 一方の配列をキーとして、もう一方の配列を値として、ひとつの配列を生成する
-        - array_pad - 指定長に指定した値で配列を埋める
-        - array_fill - 指定した値で配列を埋める
-        - array_fill_keys - キーを指定して配列を埋める
-        - array_change_key_case - 配列の全てのキーの大文字小文字を変更する
-        - array_flip - 配列のキーと値を反転する
-        - array_map - 配列の要素にコールバック関数を適用する
-        - array_walk - 配列の全要素にユーザー定義関数を適用する
-        - array_reduce - コールバック関数を繰り返し配列に適用し、配列を一つの値にまとめる
-
-    - <details><summary> 計算 </summary>
-
-        - count - 全ての要素の数
-        - sizeof - countのエイリアス
-        - array_sum - 配列の値の合計
-        - array_product - 配列の値の積
-        - array_count_values - 配列の異なる値の出現回数
-
-    - <details><summary> ポインタ </summary>
-
-        - key - 配列からキーを取り出す
-        - prev - 配列の内部ポインタをひとつ前に戻す
-        - current - 現在、配列の内部ポインタが指している要素を返す
-        - pos - currentのエイリアス
-        - next - 配列の内部ポインタを進める
-        - reset - 配列の内部ポインタを先頭の要素にセットする
-        - end - 配列の内部ポインタを末尾の要素にセットする
-
-    - <details><summary> ソート </summary>
-
-        - ksort - ソート (キー・昇順)
-        - krsort - ソート (キー・降順)
-        - asort - ソート (連想キーと要素の関係維持 / 昇順)
-        - arsort - ソート (連想キーと要素の関係維持 / 降順)
-        - sort - ソート (昇順)
-        - rsort - ソート (降順)
-        - natsort - ソート (自然順アルゴリズム)
-        - natcasesort - ソート (自然順アルゴリズム / 大文字小文字区別なし)
-        - array_multisort - 複数または多次元の配列をソート
-
-[⬆︎目次へ戻る](#目次)
-
-## mysqli
-
-*MAMP使用
-
-- 連携 (手続き型)
+**連携 (手続き型)**
 
 ```php
-// ホスト:ポート, ユーザー名, パスワード, データベース名
-$mysqli = mysqli_connect("127.0.0.1:8889", "root", "root", "test_db");
-$result = mysqli_query($mysqli, "SELECT 'Test' AS msg FROM DUAL;");
+// 接続
+$host = '127.0.0.1:8889';   // ホスト:ポート
+$user = 'root';             // ユーザー名
+$psw = 'root';              // パスワード
+$db = 'test_db';            // データベース名
+$mysqli = mysqli_connect($host, $user, $psw, $db);
+
+// 実行
+$result = mysqli_query($mysqli, 'SELECT "Test" AS msg FROM DUAL;');
 $row = mysqli_fetch_assoc($result);
-echo $row['msg'];
+echo $row['msg'];   // Test
 ```
 
-- 連携 (オブジェクト指向)
+**連携 (オブジェクト指向)**
 
 ```php
-$mysqli = new mysqli("127.0.0.1:8889", "root", "root", "test_db");
-$result = $mysqli->query("SELECT 'Test' AS msg FROM DUAL;");
+// 接続
+$mysqli = new mysqli($host, $user, $psw, $db);
+
+// 実行
+$result = $mysqli->query('SELECT "Test 2" AS msg FROM DUAL;');
 $row = $result->fetch_assoc();
 echo $row['msg'];
 ```
 
-- (例：CREATE文)
+**CREATE**
 
 ```php
-$mysqli->query("DROP TABLE IF EXISTS employees");
-$mysqli->query("CREATE TABLE employees(
+$mysqli->query('DROP TABLE IF EXISTS employees');
+$mysqli->query('CREATE TABLE employees(
                     id INT NOT NULL AUTO_INCREMENT,
                     name VARCHAR(64),
-                    PRIMARY KEY (id))");
+                    PRIMARY KEY(id)
+                );
+');
 ```
 
-- **プリペアドステートメント**: SQL文のテンプレートを事前にコンパイルし、パラメータのみ後からバインドして実行する仕組み。一度に複数INSERTすることで、クライアント・サーバー間の通信を減らすことも可能。
+**プリペアドステートメント** - SQLテンプレートを事前にコンパイルし、パラメータを後からバインドして実行する仕組み。一度に複数INSERTするなど、クライアントとサーバーの通信を減らすことも可能。
 
 ```php
-$stmt = $mysqli->prepare("INSERT INTO employees(id, name) VALUES (?, ?)");
+$stmt = $mysqli->prepare(' INSERT INTO employees(id, name) VALUES(?, ?); ');
 $id = null;
-$name = 'John';
-$stmt->bind_param("is", $id, $name);	// "is" は"int, string" の意味
-$stmt->execute();						// 実行
+$name = 'John Smith';
+$stmt->bind_param('is', $id, $name);    // i=int, s=string
+$stmt->execute();
 ```
 
-- **ストアドプロシージャ**: 呼び出して実行できるサブルーチン。
-
-**IN**
+**ストアドプロシージャ** - 呼び出して実行できるサブルーチン
 
 ```php
-$mysqli->query("DROP PROCEDURE IF EXISTS p");
-$mysqli->query("CREATE PROCEDURE p(IN name_val VARCHAR(64))
-				BEGIN
-					INSERT INTO employees(id, name) VALUES(NULL, name_val);
-				END;");
-$mysqli->query("CALL p('Paul')");
-```
+// IN
+$mysqli->query('DROP PROCEDURE IF EXISTS p');
+$mysqli->query('CREATE PROCEDURE p(IN name VARCHAR(64))
+                BEGIN
+                    INSERT INTO employees(id, name)
+                    VALUES (NULL, name);
+                END;
+');
+$mysqli->query('CALL p("Paul")');
+$mysqli->query('CALL p("Ringo")');
+$mysqli->query('CALL p("George")');
 
-**OUT**
-
-```php
-$mysqli->query("DROP PROCEDURE IF EXISTS p");
-$mysqli->query('CREATE PROCEDURE p(OUT msg VARCHAR(10))
-				BEGIN
-					SELECT "Hello" INTO msg;
-				END;');
-$mysqli->query("SET @msg = ''");
-$mysqli->query("CALL p(@msg)");
-$result = $mysqli->query("SELECT @msg AS msg_out");
+// OUT
+$mysqli->query('DROP PROCEDURE IF EXISTS p2');
+$mysqli->query('CREATE PROCEDURE p2(OUT msg VARCHAR(10))
+                BEGIN
+                    SELECT "HELLO" INTO msg;
+                END;
+');
+$mysqli->query('SET @msg = ""');
+$mysqli->query('CALL p2(@msg)');
+$result = $mysqli->query('SELECT @msg AS msg_out');
 $row = $result->fetch_assoc();
-echo $row['msg_out'];	// Hello
+echo $row['msg_out'];   // HELLO
 ```
 
-- トランザクション
+**トランザクション設定**
 
 ```php
 $mysqli->autocommit(false);
 $mysqli->query('SET AUTOCOMMIT = 0');
 ```
 
-- コミットとロールバック
+**ロールバック**
 
 ```php
 $mysqli->autocommit(false);
 
-$mysqli->query("INSERT INTO employees(id, name) VALUES (1, 'John')");
-$mysqli->rollback();	// ロールバックされid:1は挿入されない
+$mysqli->query('INSERT INTO employees(id, name) VALUES(null, "Dicky")');
+$mysqli->rollback();    // ロールバックされるため挿入されない
+```
 
-$mysqli->query("INSERT INTO employees(id, name) VALUES (2, 'Paul')");
-$mysqli->commit();		// id:2のみコミットされる
+**コミット**
+
+```php
+$mysqli->autocommit(false);
+
+$mysqli->query('INSERT INTO employees(id, name) VALUES(null, "Billy")');
+$mysqli->commit();      // コミットされる
 ```
 
 [⬆︎目次へ戻る](#目次)
 
-## mysqliクラス
+## mysqli (応用)
 
-*`$mysqli->affected_rows` のように扱う。
+**プロパティ**
 
-- プロパティ
-    - $affected_rows - 直前の操作で変更された行数
-    - $client_info - クライアント情報
-    - $client_version - クライアントのバージョン
-    - $connect_errno - 直近の接続コールのエラーコード
-    - $connect_error - 直近の接続エラーの説明
-    - $errno - 直近の関数コールのエラーコード
-    - $error - 直近のエラーの内容
-    - $error_list - 直近で実行したコマンドからのエラーの一覧
-    - $field_count - 直近のクエリのカラムの数
-    - $host_info - 使用している接続の型
-    - $info - 直近に実行されたクエリの情報
-    - $insert_id - 直近のクエリのAUTO_INCREMENTカラムで生成した値
-    - $server_info - MySQLサーバーのバージョン
-    - $server_version - MySQLサーバーのバージョン (整数値)
-    - $sqlstate - 直前の操作のSQLSTATEエラー
-    - $protocol_version - MySQLプロトコルのバージョン
-    - $thread_id - 現在の接続のスレッドID
-    - $warning_count - 直近の実行されたクエリから発生した警告の数
-- 接続
-    - [コンストラクタ](/mysqli/connection.php) - 新規にMySQLサーバーへ接続
-    - [close](/mysqli/connection.php) - 接続を閉じる
-    - [change_user](/mysqli/connection.php) - DB接続のユーザーを変更
-    - [real_escape_string](/mysqli/connection.php) - SQL文で使用する文字列の特殊文字をエスケープする
-    - [character_set_name](/mysqli/connection.php) - 現在の文字コードセット
-    - poll - 接続の問い合わせ
-    - real_connect - 接続をオープンする
-    - ssl_set - SSLを使用したセキュア接続
-    - kill - スレッド停止の問い合わせ
-- トランザクション
-    - [autocommit](/mysqli/transaction.php) - 自動コミットのオン/オフ
-    - [begin_transaction](/mysqli/transaction.php) - トランザクションを開始する
-    - [commit](/mysqli/transaction.php) - 現在のトランザクションをコミット
-    - [rollback](/mysqli/transaction.php) - 現在のトランザクションをロールバック
-    - [savepoint](/mysqli/transaction.php) - トランザクションのセーブポイントを設定
-    - [release_savepoint](/mysqli/transaction.php) - 指定したセーブポイントを削除
-- クエリ
-    - [query](/mysqli/query/query.php) - クエリ実行
-    - [execute_query](/mysqli/query/execute_query.php) - SQL文を準備し、変数をバインドし実行
-    - [multi_query](/mysqli/query/multi_query.php) - DBで一つ以上のクエリを実行
-    - [more_results](/mysqli/query/multi_query.php) - マルチクエリの結果はまだ残っているか確認
-    - [next_result](/mysqli/query/multi_query.php) - multi_queryの次の結果を準備
-    - [store_result](/mysqli/query/multi_query.php) - 直近のクエリから結果セットを転送
-    - [prepare](/mysqli/query/prepare.php) - 実行するためのSQL文を準備
-    - real_query - SQLクエリ実行
-    - [select_db](/mysqli/query/select_db.php) - クエリを実行するためのデフォルトのDBを選択
-    - reap_async_query - 非同期クエリから結果を取得
-- デバッグ
-    - debug - デバッグ操作
-    - dump_debug_info - デバッグ情報をログに出力
-- 情報
-    - [get_connection_stats](/mysqli/consconnectiontruct.php) - クライアント接続の統計情報
-    - set_charset - 文字セットの設定
-    - get_charset - 文字セットオブジェクトを返す
-    - get_warnings - SHOW WARNINGS の結果を取得する
-    - init - MySQLi を初期化し、mysqli_real_connect() で使うオブジェクトを返す
-    - options - オプションを設定する
-    - refresh - リフレッシュする
-    - stat - 現在のシステム状態
-    - stmt_init - ステートメントを初期化し、mysqli_stmt_prepare で使用するオブジェクトを返す
-    - thread_safe - スレッドセーフであるかどうかを返す
-    - use_result - 結果セットの取得を開始する
+```php
+$x = $mysqli->affected_rows;        // 直前の操作で変更された行数
+$x = $mysqli->client_info;          // クライアント情報
+$x = $mysqli->client_version;       // クライアントのバージョン
+$x = $mysqli->connect_errno;        // 直近の接続コールのエラーコード
+$x = $mysqli->connect_error;        // 直近の接続コールのエラー説明
+$x = $mysqli->errno;                // 直近の関数コールのエラーコード
+$x = $mysqli->error;                // 直近の関数コールのエラー説明
+$x = $mysqli->error_list;           // 直近で実行したコマンドのエラー一覧
+$x = $mysqli->field_count;          // 直近のクエリのカラム数
+$x = $mysqli->host_info;            // 使用している接続のホスト情報
+$x = $mysqli->info;                 // 直近に実行されたクエリ情報
+$x = $mysqli->insert_id;            // 直近のクエリのAUTO_INCREMENTで生成した値
+$x = $mysqli->sqlstate;             // 直前の操作のSQLSTATEエラー
+$x = $mysqli->protocol_version;     // MySQLプロトコルのバージョン
+$x = $mysqli->thread_id;            // 現在の接続のスレッドID
+$x = $mysqli->warning_count;        // 直近のクエリで発生した警告数
+```
+
+**接続を閉じる**
+
+```php
+$mysqli->close();
+```
+
+**セーブポイント設定**
+
+```php
+$mysqli->autocommit(false);
+
+$mysqli->begin_transaction();
+$mysqli->savepoint('save1');            // セーブポイント設定
+$mysqli->release_savepoint('save1');    // セーブポイント削除
+$mysqli->commit();
+```
+
+**SQL+バインド**
+
+```php
+$query = 'SELECT id, name FROM employees WHERE id = ?';
+$result = $mysqli->execute_query($query, [5]);
+
+foreach ($result as $row) {
+    echo $row['name'] . PHP_EOL;
+}
+```
+
+**マルチクエリ**
+
+```php
+$query  = 'SELECT CURRENT_USER();';
+$query .= 'SELECT "Test 1" AS msg FROM DUAL;';
+$query .= 'SELECT "Test 2" AS msg FROM DUAL;';
+$mysqli->multi_query($query);
+
+do {
+    // 直近のクエリから結果を転送
+    if ($result = $mysqli->store_result()) {
+        // 行を取得
+        while ($row = $result->fetch_row()) {
+            printf("%s\n", $row[0]);
+        }
+    }
+
+    // マルチクエリの結果が残っている場合実行
+    if ($mysqli->more_results()) {
+        print("--------------\n");
+    }
+} while ($mysqli->next_result());
+```
+
+**データベース選択**
+
+```php
+$result = $mysqli->query('SELECT DATABASE()');
+$row = $result->fetch_row();
+echo $row[0] . PHP_EOL;     // test_db
+
+// デフォルトDBを選択
+$mysqli->select_db('sample_db');
+
+$result = $mysqli->query('SELECT DATABASE()');
+$row = $result->fetch_row();
+echo $row[0] . PHP_EOL;     // sample_db
+```
+
+[⬆︎目次へ戻る](#目次)
+
+## PDO
+
+**接続**
+
+```php
+$dsn = 'mysql:host=127.0.0.1:8889;dbname=test_db';
+$user = 'root';
+$psw = 'root';
+
+try {
+    $dbh = new PDO($dsn, $user, $psw);
+    $sth = $dbh->query('SELECT "Test" FROM DUAL;');
+    echo '接続しました。' . PHP_EOL;
+} catch (PDOException $e) {
+    die('接続できません。', $e->getMessage());
+} finally {
+    $sth = null;
+    $dbh = null;
+}
+```
+
+**ロールバック**
+
+```php
+$dbh->beginTransaction();
+$dbh->exec('INSERT INTO employees (id, name) VALUES (null, "Arbert")');
+$dbh->rollBack();
+```
+
+**コミット**
+
+```php
+$dbh->beginTransaction();
+$dbh->exec('INSERT INTO employees (id, name) VALUES (null, "Bertholdt")');
+$dbh->commit();
+```
+
+**プリペアドステートメント (名前付きプレースホルダ)**
+
+```php
+$stmt = $dbh->prepare('INSERT INTO employees (id, name) VALUES (null, :name)');
+$stmt->bindParam(':name', $name);
+
+// 繰り返し挿入処理を行う
+$name = 'Jared';
+$stmt->execute();
+$name = 'Sato';
+$stmt->execute();
+```
+
+**プリペアドステートメント (プレースホルダ: ?)**
+
+```php
+$stmt = $dbh->prepare('INSERT INTO employees (id, name) VALUES (null, ?)');
+$stmt->bindParam(1, $name);
+
+// 繰り返し挿入処理を行う
+$name = 'Kato';
+$stmt->execute();
+$name = 'Tanaka';
+$stmt->execute();
+```
+
+**SQLの実行パターン**
+
+```php
+// exec - 結果を返さないSQL
+$dbh->exec('INSERT INTO employees (id, name) VALUES (null, "Lee")');
+
+// query - 戻り値としてPDOStatementが必要な場合使う
+$stmt = $dbh->query('SELECT * FROM employees');
+$stmt->execute();
+foreach ($stmt as $row) {
+    print_r($row);
+}
+```
+
+**SELECTパターン**
+
+```php
+$stmt = $dbh->query('SELECT * FROM employees');
+
+// PDOStatement::fetch
+while ($emp = $stmt->fetch()) {
+    echo $emp['id'] . ' ' . $emp['name'] . PHP_EOL;
+}
+
+// PDOStatement::fetchAll
+$emps = $stmt->fetchAll();
+for ($i=0; $i<count($emps); $i++) {
+    echo $emps[$i]['id'] . ' ' . $emps[$i]['name'] . PHP_EOL;
+}
+```
 
 [⬆︎目次へ戻る](#目次)

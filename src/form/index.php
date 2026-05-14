@@ -1,0 +1,9 @@
+<form action="action.php" method="post">
+    <label for="name">Name:</label>
+    <input type="text" name="name" id="name">
+
+    <label for="age">Age:</label>
+    <input type="number" name="age" id="age">
+
+    <button type="submit">Send</button>
+</form>
